@@ -1,0 +1,29 @@
+<%- include('../plantillas/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Compradores</h1>
+  <a class="btn btn-primary" href="/compradores/crear">Nuevo comprador</a>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr><th>Código</th><th>Nombre</th><th>Dirección</th><th>Correo</th><th>Compras</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    <% compradores.forEach(c => { %>
+      <tr>
+        <td><%= c.codigo_cpr %></td>
+        <td><%= c.nombre %> <%= c.apellido_paterno %> <%= c.apellido_materno || '' %></td>
+        <td><%= c.direccion %></td>
+        <td><%= c.correo %></td>
+        <td><%= c.compras.length %></td>
+        <td class="text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="/compradores/<%= c.codigo_cpr %>/editar">Editar</a>
+          <%- include('../plantillas/eliminar', { url: '/compradores/' + c.codigo_cpr, pregunta: '¿Eliminar este comprador?' }) %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!compradores.length) { %><tr><td colspan="6" class="text-center text-muted">No hay compradores registrados</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+<%- include('../plantillas/footer') %>

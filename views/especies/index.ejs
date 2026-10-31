@@ -1,0 +1,35 @@
+<%- include('../plantillas/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Especies</h1>
+  <a class="btn btn-primary" href="/especies/crear">Nueva especie</a>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr><th>ID</th><th>Imagen</th><th>Nombre</th><th>Tipo</th><th>Lote</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    <% especies.forEach(e => { %>
+      <tr>
+        <td><%= e.id_epe %></td>
+        <td>
+          <% if (e.imagen) { %>
+            <img src="/img/especies/<%= e.imagen %>" alt="<%= e.nombre %>" class="miniatura rounded">
+          <% } else { %>
+            <span class="text-muted small">Sin imagen</span>
+          <% } %>
+        </td>
+        <td><%= e.nombre %></td>
+        <td><%= e.tipo.nombre %></td>
+        <td>Lote <%= e.id_lte %> · <%= Number(e.lote.kilos).toFixed(2) %> kg</td>
+        <td class="text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="/especies/<%= e.id_epe %>/editar">Editar</a>
+          <%- include('../plantillas/eliminar', { url: '/especies/' + e.id_epe, pregunta: '¿Eliminar esta especie?' }) %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!especies.length) { %><tr><td colspan="6" class="text-center text-muted">No hay especies registradas</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+<%- include('../plantillas/footer') %>

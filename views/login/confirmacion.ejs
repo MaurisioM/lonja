@@ -1,0 +1,7 @@
+<%- include('../plantillas/simple_header') %>
+<h1 class="h4 text-center"><%= pagina %></h1>
+<div class="alert alert-info text-center" role="alert"><%= mensaje %></div>
+<% if (typeof enlace !== 'undefined' && enlace) { %>
+  <div class="d-grid"><a class="btn btn-primary" href="<%= enlace %>">Continuar</a></div>
+<% } %>
+<%- include('../plantillas/simple_footer') %>

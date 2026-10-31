@@ -1,0 +1,30 @@
+<%- include('../plantillas/header') %>
+<% const l = lote || {}; %>
+<h1 class="h3 mb-3"><%= l.id_lte ? 'Editar lote ' + l.id_lte : 'Nuevo lote' %></h1>
+<%- include('../plantillas/errores') %>
+<form action="<%= action %>" method="<%= method %>" class="row g-3" style="max-width: 720px">
+  <div class="col-md-4">
+    <label class="form-label" for="kilos">Kilos</label>
+    <input type="number" step="0.01" min="0.01" class="form-control" id="kilos" name="kilos" value="<%= l.kilos || '' %>" required>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="numero_cajas">Número de cajas</label>
+    <input type="number" step="1" min="1" max="32767" class="form-control" id="numero_cajas" name="numero_cajas" value="<%= l.numero_cajas || '' %>" required>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="precio_kilo_salida">Precio de salida por kilo</label>
+    <div class="input-group">
+      <span class="input-group-text">$</span>
+      <input type="number" step="0.01" min="0.01" class="form-control" id="precio_kilo_salida" name="precio_kilo_salida" value="<%= l.precio_kilo_salida || '' %>" required>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label" for="fecha">Fecha y hora de entrada</label>
+    <input type="datetime-local" class="form-control" id="fecha" name="fecha" value="<%= valorDatetimeLocal(l.fecha || new Date()) %>" required>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <a class="btn btn-outline-secondary" href="/lotes/ver">Cancelar</a>
+  </div>
+</form>
+<%- include('../plantillas/footer') %>

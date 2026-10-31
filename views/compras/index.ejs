@@ -1,0 +1,39 @@
+<%- include('../plantillas/header') %>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h3 mb-0">Compras</h1>
+  <form class="d-flex gap-2" method="GET" action="/compras/ver">
+    <input type="date" class="form-control" name="fecha" value="<%= fecha %>" aria-label="Filtrar por fecha">
+    <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+    <% if (fecha) { %><a class="btn btn-outline-secondary" href="/compras/ver">Todas</a><% } %>
+  </form>
+  <a class="btn btn-primary" href="/compras/crear">Registrar compra</a>
+</div>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Lote</th><th>Fecha</th><th>Comprador</th><th>Especies</th><th class="text-end">Kilos</th>
+      <th class="text-end">Precio final / kg</th><th class="text-end">Total</th><th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% compras.forEach(c => { %>
+      <tr>
+        <td><%= c.id_cmp %></td>
+        <td><%= mostrarFecha(c.fecha) %></td>
+        <td><%= c.comprador.nombre %> <%= c.comprador.apellido_paterno %></td>
+        <td><%= c.lote.especies.map(e => e.nombre).join(', ') || '—' %></td>
+        <td class="text-end"><%= Number(c.lote.kilos).toFixed(2) %></td>
+        <td class="text-end"><%= dinero(c.precio_kilo_final) %></td>
+        <td class="text-end fw-semibold"><%= dinero(c.precio_total) %></td>
+        <td class="text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="/compras/<%= c.id_cmp %>/editar">Editar</a>
+          <%- include('../plantillas/eliminar', { url: '/compras/' + c.id_cmp, pregunta: '¿Eliminar esta compra? El lote volverá a quedar disponible.' }) %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!compras.length) { %><tr><td colspan="8" class="text-center text-muted">No hay compras registradas</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+<%- include('../plantillas/footer') %>

@@ -1,0 +1,38 @@
+<%- include('./plantillas/header') %>
+<h1 class="h3 mb-1">Bienvenido, <%= usuario.nombre %></h1>
+<p class="text-muted">Resumen del día <%= hoy %></p>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card h-100 border-primary"><div class="card-body">
+      <div class="text-muted small">Compras de hoy</div>
+      <div class="fs-3 fw-bold"><%= numCompras %></div>
+    </div></div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card h-100 border-primary"><div class="card-body">
+      <div class="text-muted small">Kilos vendidos hoy</div>
+      <div class="fs-3 fw-bold"><%= kilos.toLocaleString('es-MX', { maximumFractionDigits: 2 }) %> kg</div>
+    </div></div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card h-100 border-primary"><div class="card-body">
+      <div class="text-muted small">Importe de hoy</div>
+      <div class="fs-3 fw-bold"><%= importe %></div>
+    </div></div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="card h-100 border-warning"><div class="card-body">
+      <div class="text-muted small">Lotes sin vender</div>
+      <div class="fs-3 fw-bold"><%= lotesSinVender %></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2">
+  <a class="btn btn-primary" href="/compras/crear">Registrar compra</a>
+  <a class="btn btn-outline-primary" href="/lotes/crear">Nuevo lote</a>
+  <a class="btn btn-outline-primary" href="/compradores/crear">Nuevo comprador</a>
+  <a class="btn btn-success" href="/reportes/diario">Ver reporte del día</a>
+</div>
+<%- include('./plantillas/footer') %>

@@ -1,0 +1,4 @@
+node_modules/
+.env
+public/img/especies/*
+!public/img/especies/.gitkeep

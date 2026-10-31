@@ -1,0 +1,23 @@
+<%- include('../plantillas/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Tipos de especie</h1>
+  <a class="btn btn-primary" href="/tipos/crear">Nuevo tipo</a>
+</div>
+<table class="table table-striped align-middle" style="max-width: 720px">
+  <thead class="table-dark"><tr><th>ID</th><th>Nombre</th><th>Especies</th><th>Acciones</th></tr></thead>
+  <tbody>
+    <% tipos.forEach(t => { %>
+      <tr>
+        <td><%= t.id_tpo %></td>
+        <td><%= t.nombre %></td>
+        <td><%= t.especies.length %></td>
+        <td class="text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="/tipos/<%= t.id_tpo %>/editar">Editar</a>
+          <%- include('../plantillas/eliminar', { url: '/tipos/' + t.id_tpo, pregunta: '¿Eliminar este tipo?' }) %>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!tipos.length) { %><tr><td colspan="4" class="text-center text-muted">No hay tipos registrados</td></tr><% } %>
+  </tbody>
+</table>
+<%- include('../plantillas/footer') %>

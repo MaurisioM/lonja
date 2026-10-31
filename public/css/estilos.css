@@ -1,0 +1,50 @@
+:root {
+  --lonja: #0b4f6c;
+}
+
+.bg-lonja {
+  background-color: var(--lonja);
+}
+
+.text-lonja {
+  color: var(--lonja);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--lonja);
+  --bs-btn-border-color: var(--lonja);
+  --bs-btn-hover-bg: #083b51;
+  --bs-btn-hover-border-color: #083b51;
+  --bs-btn-active-bg: #083b51;
+}
+
+.fondo-login {
+  background: linear-gradient(160deg, #0b4f6c 0%, #01baef 100%);
+}
+
+.tarjeta-login {
+  max-width: 460px;
+}
+
+.miniatura {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+}
+
+.mini-reporte {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+  main {
+    box-shadow: none !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}

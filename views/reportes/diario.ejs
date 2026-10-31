@@ -1,0 +1,95 @@
+<%- include('../plantillas/header') %>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 d-print-none">
+  <h1 class="h3 mb-0">Reporte diario de compras</h1>
+  <form class="d-flex gap-2" method="GET" action="/reportes/diario">
+    <input type="date" class="form-control" name="fecha" value="<%= fecha %>" aria-label="Fecha del reporte">
+    <button class="btn btn-primary" type="submit">Consultar</button>
+  </form>
+  <button class="btn btn-success" type="button" onclick="window.print()">Imprimir / PDF</button>
+</div>
+
+<div class="text-center mb-4">
+  <img src="/bootstrap/img/lonja.svg" width="56" height="56" alt="" class="d-none d-print-inline">
+  <h2 class="h4 mb-0">Lonja de Veracruz</h2>
+  <p class="mb-0">Informe diario de compras · <strong class="text-capitalize"><%= fechaLarga %></strong></p>
+  <p class="small text-muted">Generado el <%= generado %> por <%= usuario.nombre %> <%= usuario.apellido %></p>
+</div>
+
+<div class="row g-3 mb-4 text-center">
+  <div class="col-6 col-md-3"><div class="border rounded p-2"><div class="small text-muted">Compras</div><div class="fs-4 fw-bold"><%= compras.length %></div></div></div>
+  <div class="col-6 col-md-3"><div class="border rounded p-2"><div class="small text-muted">Kilos</div><div class="fs-4 fw-bold"><%= totales.kilos.toFixed(2) %></div></div></div>
+  <div class="col-6 col-md-3"><div class="border rounded p-2"><div class="small text-muted">Cajas</div><div class="fs-4 fw-bold"><%= totales.cajas %></div></div></div>
+  <div class="col-6 col-md-3"><div class="border rounded p-2"><div class="small text-muted">Importe total</div><div class="fs-4 fw-bold"><%= dinero(totales.importe) %></div></div></div>
+</div>
+
+<h3 class="h5">Detalle de compras</h3>
+<div class="table-responsive">
+<table class="table table-sm table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Hora</th><th>Lote</th><th>Comprador</th><th>Especies (tipo)</th>
+      <th class="text-end">Kilos</th><th class="text-end">Cajas</th>
+      <th class="text-end">Salida / kg</th><th class="text-end">Final / kg</th><th class="text-end">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% compras.forEach(c => { %>
+      <tr>
+        <td><%= new Date(c.fecha).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) %></td>
+        <td><%= c.id_cmp %></td>
+        <td>
+          <%= c.comprador.codigo_cpr %> · <%= c.comprador.nombre %> <%= c.comprador.apellido_paterno %> <%= c.comprador.apellido_materno || '' %>
+        </td>
+        <td>
+          <% c.lote.especies.forEach(e => { %>
+            <div class="d-flex align-items-center gap-1">
+              <% if (e.imagen) { %><img src="/img/especies/<%= e.imagen %>" alt="" class="mini-reporte rounded"><% } %>
+              <%= e.nombre %> <span class="text-muted small">(<%= e.tipo.nombre %>)</span>
+            </div>
+          <% }) %>
+          <% if (!c.lote.especies.length) { %>—<% } %>
+        </td>
+        <td class="text-end"><%= Number(c.lote.kilos).toFixed(2) %></td>
+        <td class="text-end"><%= c.lote.numero_cajas %></td>
+        <td class="text-end"><%= dinero(c.lote.precio_kilo_salida) %></td>
+        <td class="text-end"><%= dinero(c.precio_kilo_final) %></td>
+        <td class="text-end fw-semibold"><%= dinero(c.precio_total) %></td>
+      </tr>
+    <% }) %>
+    <% if (!compras.length) { %>
+      <tr><td colspan="9" class="text-center text-muted py-3">No hubo compras en esta fecha</td></tr>
+    <% } %>
+  </tbody>
+  <% if (compras.length) { %>
+    <tfoot class="table-light fw-bold">
+      <tr>
+        <td colspan="4" class="text-end">Totales</td>
+        <td class="text-end"><%= totales.kilos.toFixed(2) %></td>
+        <td class="text-end"><%= totales.cajas %></td>
+        <td colspan="2"></td>
+        <td class="text-end"><%= dinero(totales.importe) %></td>
+      </tr>
+    </tfoot>
+  <% } %>
+</table>
+</div>
+
+<% if (porComprador.length) { %>
+  <h3 class="h5 mt-4">Resumen por comprador</h3>
+  <table class="table table-sm table-bordered" style="max-width: 720px">
+    <thead class="table-light">
+      <tr><th>Comprador</th><th class="text-end">Lotes</th><th class="text-end">Kilos</th><th class="text-end">Importe</th></tr>
+    </thead>
+    <tbody>
+      <% porComprador.forEach(p => { %>
+        <tr>
+          <td><%= p.nombre %></td>
+          <td class="text-end"><%= p.lotes %></td>
+          <td class="text-end"><%= p.kilos.toFixed(2) %></td>
+          <td class="text-end"><%= dinero(p.importe) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<% } %>
+<%- include('../plantillas/footer') %>

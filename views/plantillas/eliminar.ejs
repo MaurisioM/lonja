@@ -1,0 +1,7 @@
+<%# botón de eliminar; solo se muestra al administrador %>
+<% if (usuario && usuario.rol === 'admin') { %>
+  <form action="<%= url %>?_method=DELETE" method="POST" class="d-inline"
+    onsubmit="return confirm('<%= pregunta %>')">
+    <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+  </form>
+<% } %>

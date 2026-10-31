@@ -1,0 +1,78 @@
+<%- include('../plantillas/header') %>
+<% const c = compra || {}; %>
+<h1 class="h3 mb-3"><%= editando ? 'Editar compra del lote ' + c.id_cmp : 'Registrar compra' %></h1>
+<%- include('../plantillas/errores') %>
+<% if (!editando && !lotes.length) { %>
+  <div class="alert alert-info">No hay lotes disponibles para vender. <a href="/lotes/crear">Registra un lote</a>.</div>
+<% } %>
+<% if (!compradores.length) { %>
+  <div class="alert alert-info">No hay compradores. <a href="/compradores/crear">Registra un comprador</a>.</div>
+<% } %>
+
+<form action="<%= action %>" method="<%= method %>" class="row g-3" style="max-width: 760px">
+  <div class="col-md-6">
+    <label class="form-label" for="id_cmp">Lote</label>
+    <select class="form-select" id="id_cmp" name="id_cmp" required <%= editando ? 'disabled' : '' %>>
+      <option value="" data-kilos="0" data-salida="0">-- Selecciona un lote disponible --</option>
+      <% lotes.forEach(l => { %>
+        <option value="<%= l.id_lte %>" data-kilos="<%= l.kilos %>" data-salida="<%= l.precio_kilo_salida %>"
+          <%= String(c.id_cmp) === String(l.id_lte) ? 'selected' : '' %>>
+          Lote <%= l.id_lte %> · <%= Number(l.kilos).toFixed(2) %> kg<%= l.especies.length ? ' · ' + l.especies.map(e => e.nombre).join(', ') : '' %>
+        </option>
+      <% }) %>
+    </select>
+    <div class="form-text" id="info-lote"></div>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label" for="codigo_cpr">Comprador</label>
+    <select class="form-select" id="codigo_cpr" name="codigo_cpr" required>
+      <option value="">-- Selecciona --</option>
+      <% compradores.forEach(p => { %>
+        <option value="<%= p.codigo_cpr %>" <%= String(c.codigo_cpr) === String(p.codigo_cpr) ? 'selected' : '' %>>
+          <%= p.codigo_cpr %> · <%= p.nombre %> <%= p.apellido_paterno %> <%= p.apellido_materno || '' %>
+        </option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="precio_kilo_final">Precio final por kilo</label>
+    <div class="input-group">
+      <span class="input-group-text">$</span>
+      <input type="number" step="0.01" min="0.01" class="form-control" id="precio_kilo_final" name="precio_kilo_final"
+        value="<%= c.precio_kilo_final || '' %>" required>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="total">Precio total</label>
+    <input class="form-control fw-bold" id="total" value="$0.00" readonly tabindex="-1">
+    <div class="form-text">Se calcula: kilos × precio final.</div>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="fecha">Fecha y hora</label>
+    <input type="datetime-local" class="form-control" id="fecha" name="fecha" value="<%= valorDatetimeLocal(c.fecha || new Date()) %>" required>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Guardar compra</button>
+    <a class="btn btn-outline-secondary" href="/compras/ver">Cancelar</a>
+  </div>
+</form>
+
+<script>
+  // muestra el total mientras se captura (el servidor lo vuelve a calcular al guardar)
+  const lote = document.getElementById('id_cmp');
+  const precio = document.getElementById('precio_kilo_final');
+  const total = document.getElementById('total');
+  const info = document.getElementById('info-lote');
+  const moneda = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+  function calcular() {
+    const op = lote.options[lote.selectedIndex];
+    const kilos = Number(op.dataset.kilos || 0);
+    const salida = Number(op.dataset.salida || 0);
+    info.textContent = kilos ? `Kilos: ${kilos.toFixed(2)} · Precio de salida: ${moneda(salida)} por kg` : '';
+    total.value = moneda(kilos * Number(precio.value || 0));
+  }
+  lote.addEventListener('change', calcular);
+  precio.addEventListener('input', calcular);
+  calcular();
+</script>
+<%- include('../plantillas/footer') %>

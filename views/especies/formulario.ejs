@@ -1,0 +1,49 @@
+<%- include('../plantillas/header') %>
+<% const e = especie || {}; %>
+<h1 class="h3 mb-3"><%= e.id_epe ? 'Editar' : 'Nueva' %> especie</h1>
+<%- include('../plantillas/errores') %>
+<% if (!lotes.length) { %>
+  <div class="alert alert-info">Primero registra un <a href="/lotes/crear">lote</a>.</div>
+<% } %>
+<form action="<%= action %>" method="<%= method %>" enctype="multipart/form-data" class="row g-3" style="max-width: 720px">
+  <div class="col-md-6">
+    <label class="form-label" for="nombre">Nombre</label>
+    <input class="form-control" id="nombre" name="nombre" maxlength="25" value="<%= e.nombre || '' %>" placeholder="Ej. Huachinango" required autofocus>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label" for="id_tpo">Tipo</label>
+    <select class="form-select" id="id_tpo" name="id_tpo" required>
+      <option value="">-- Selecciona --</option>
+      <% tipos.forEach(t => { %>
+        <option value="<%= t.id_tpo %>" <%= String(e.id_tpo) === String(t.id_tpo) ? 'selected' : '' %>><%= t.nombre %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label" for="id_lte">Lote</label>
+    <select class="form-select" id="id_lte" name="id_lte" required>
+      <option value="">-- Selecciona --</option>
+      <% lotes.forEach(l => { %>
+        <option value="<%= l.id_lte %>" <%= String(e.id_lte) === String(l.id_lte) ? 'selected' : '' %>>
+          Lote <%= l.id_lte %> · <%= Number(l.kilos).toFixed(2) %> kg · <%= l.numero_cajas %> cajas
+        </option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label" for="imagen">Imagen (opcional, máx. 2 MB)</label>
+    <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+    <% if (e.imagen) { %>
+      <div class="form-text">Imagen actual (sube otra para reemplazarla):</div>
+      <img src="/img/especies/<%= e.imagen %>" alt="" class="miniatura rounded mt-1">
+    <% } %>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <% if (!e.id_epe) { %>
+      <button class="btn btn-outline-primary" type="submit" name="otra" value="1">Guardar y agregar otra al mismo lote</button>
+    <% } %>
+    <a class="btn btn-outline-secondary" href="/especies/ver">Cancelar</a>
+  </div>
+</form>
+<%- include('../plantillas/footer') %>
