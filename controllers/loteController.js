@@ -1,18 +1,21 @@
 import { check, validationResult } from "express-validator";
 import fs from "fs/promises";
 import db from "../config/db.js";
-import { Lote, Especie, Tipo, Compra } from "../models/index.js";
+import { Lote, Especie, Tipo, Compra, Carrito } from "../models/index.js";
 import { valorDatetimeLocal } from "../helpers/fechas.js";
+import { limpiarVencidos } from "../helpers/carrito.js";
 
 const formulario = (res, lote, action, errores = null) =>
   res.render("lotes/formulario", { lote, action, method: "POST", errores, valorDatetimeLocal });
 
 const inicio = async (req, res) => {
+  await limpiarVencidos();
   const lotes = await Lote.findAll({
     order: [["id_lte", "DESC"]],
     include: [
       { model: Especie, as: "especies", include: [{ model: Tipo, as: "tipo" }] },
       { model: Compra, as: "compra" },
+      { model: Carrito, as: "carrito" }, // apartado en el carrito de un comprador en línea
     ],
   });
   res.render("lotes/index", { lotes });

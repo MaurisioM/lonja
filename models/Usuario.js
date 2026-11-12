@@ -40,10 +40,15 @@ const Usuario = db.define(
       defaultValue: false,
     },
     rol: {
-      // "admin" o "usuario"
+      // "admin", "usuario" (personal) o "comprador" (tienda en línea)
       type: DataTypes.STRING(15),
       allowNull: false,
       defaultValue: "usuario",
+    },
+    codigo_cpr: {
+      // solo para rol "comprador": a qué comprador pertenece la cuenta
+      type: DataTypes.SMALLINT,
+      allowNull: true,
     },
     token: {
       type: DataTypes.STRING,

@@ -1,0 +1,81 @@
+<%- include('../plantillas/tienda_header') %>
+<h1 class="h3 mb-3">Pago</h1>
+<%- include('../plantillas/errores') %>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header fw-semibold">Datos de la tarjeta</div>
+      <div class="card-body">
+        <div class="alert alert-info small py-2">
+          Pago simulado: no se hace ningún cargo real. Para probar usa la tarjeta
+          <strong>4242 4242 4242 4242</strong>, cualquier vencimiento futuro y cualquier CVV.
+        </div>
+        <form action="/tienda/pago" method="POST" class="row g-3" autocomplete="off">
+          <%# los lotes que se están viendo: si el carrito cambia, el servidor no cobra %>
+          <input type="hidden" name="lotes" value="<%= filas.map(f => f.id_lte).join(',') %>">
+          <div class="col-12">
+            <label class="form-label" for="titular">Nombre del titular</label>
+            <input class="form-control" id="titular" name="titular" maxlength="60" value="<%= titular %>" required autofocus>
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="numero">Número de tarjeta</label>
+            <input class="form-control" id="numero" name="numero" inputmode="numeric" maxlength="23"
+              placeholder="0000 0000 0000 0000" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="vencimiento">Vencimiento</label>
+            <input class="form-control" id="vencimiento" name="vencimiento" inputmode="numeric" maxlength="5"
+              placeholder="MM/AA" required>
+          </div>
+          <div class="col-6">
+            <label class="form-label" for="cvv">CVV</label>
+            <input type="password" class="form-control" id="cvv" name="cvv" inputmode="numeric" maxlength="4"
+              placeholder="123" required>
+          </div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button class="btn btn-success" type="submit">Pagar <%= dinero(total) %></button>
+            <a class="btn btn-outline-secondary" href="/tienda/carrito">Volver al carrito</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header fw-semibold">Resumen del pedido</div>
+      <ul class="list-group list-group-flush">
+        <% filas.forEach(f => { const l = f.lote; %>
+          <li class="list-group-item d-flex justify-content-between gap-3">
+            <div>
+              <div>Lote <%= l.id_lte %></div>
+              <div class="small text-muted">
+                <%= l.especies.map(e => e.nombre).join(', ') || 'Sin especies' %> ·
+                <%= Number(l.kilos).toFixed(2) %> kg × <%= dinero(l.precio_kilo_salida) %>
+              </div>
+            </div>
+            <div class="fw-semibold text-nowrap"><%= dinero(totalLote(l)) %></div>
+          </li>
+        <% }) %>
+        <li class="list-group-item d-flex justify-content-between fw-bold fs-5">
+          <span>Total</span><span><%= dinero(total) %></span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // formato mientras se escribe: grupos de 4 dígitos y MM/AA
+  document.getElementById("numero").addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 19).replace(/(.{4})(?=.)/g, "$1 ");
+  });
+  document.getElementById("vencimiento").addEventListener("input", (e) => {
+    const d = e.target.value.replace(/\D/g, "").slice(0, 4);
+    e.target.value = d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d;
+  });
+  document.getElementById("cvv").addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "");
+  });
+</script>
+<%- include('../plantillas/footer') %>

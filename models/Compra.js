@@ -29,6 +29,11 @@ const Compra = db.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    id_pgo: {
+      // FK -> pago (NULL = compra registrada en mostrador por el personal)
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "compra",

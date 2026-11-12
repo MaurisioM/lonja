@@ -3,6 +3,8 @@ import {
   login,
   verRegistro,
   registrologin,
+  verRegistroComprador,
+  registroComprador,
   confirmarIncripcionEnlace,
   credenciales,
   principal,
@@ -16,6 +18,8 @@ const router_login = express.Router();
 router_login.get("/", login);
 router_login.get("/ver_registro", verRegistro);
 router_login.post("/registrar_login", registrologin);
+router_login.get("/registro_comprador", verRegistroComprador);
+router_login.post("/registrar_comprador", registroComprador);
 router_login.get("/confirmarinscripcion/:token", confirmarIncripcionEnlace);
 router_login.post("/credenciales", credenciales);
 router_login.get("/inicio", rutaProteger, principal);

@@ -26,14 +26,26 @@ Hecho con **Node.js + Express + EJS + Sequelize + MariaDB**, con la misma estruc
    (kilos × precio final) y un lote no se puede comprar dos veces.
 2. **Control de acceso**: login con JSON Web Token guardado en una cookie `httpOnly`. Todas las páginas,
    menos el login y el registro, piden sesión (`middleware/protegerRutas.js`).
-   Hay dos roles (`middleware/soloAdmin.js`):
-   - `admin`: todo, más administrar usuarios y eliminar registros.
+   Hay tres roles y todos entran por el mismo login:
+   - `admin`: todo, más administrar usuarios y eliminar registros (`middleware/soloAdmin.js`).
    - `usuario`: capturar y editar compras, lotes, especies y compradores, y ver reportes.
+   - `comprador`: solo la tienda en línea (`middleware/soloComprador.js`); no puede entrar a la
+     administración (`middleware/soloPersonal.js`).
 
    El registro público manda un correo de confirmación (nodemailer). El admin también puede crear
    usuarios ya confirmados o activar cuentas.
-3. **Reporte diario**: detalle de las compras del día elegido, con totales (kilos, cajas, importe)
-   y resumen por comprador. Se puede imprimir o guardar como PDF.
+3. **Reportes por día o por rango de fechas**: detalle de las compras del periodo elegido, con totales
+   (kilos, cajas, importe), resumen por día y por comprador, y si la compra fue en línea o en mostrador.
+   Se puede imprimir o guardar como PDF.
+4. **Tienda en línea para compradores**: el comprador crea su cuenta, ve los lotes en venta (cada lote
+   es un artículo y se vende completo al precio de salida), los agrega a su carrito y paga.
+   - Un lote que está en el carrito de un comprador aparece **No disponible** para los demás.
+     Lo garantiza la base de datos: en la tabla `carrito` la llave primaria es el lote.
+   - El apartado dura `CARRITO_MINUTOS` (30 por defecto, se cambia en `.env`); si no se paga, el lote
+     vuelve a quedar disponible.
+   - El pago es **simulado**: valida la tarjeta (dígito verificador, vencimiento y CVV) pero no hace
+     ningún cargo. Solo se guardan los últimos 4 dígitos y un folio. Tarjeta de prueba:
+     `4242 4242 4242 4242`, cualquier vencimiento futuro y cualquier CVV.
 
 ---
 
@@ -348,7 +360,19 @@ Primera vez:
    Usa *Guardar y agregar otra* si el lote trae varias especies.
 4. **Compras → Registrar compra**: eliges el lote, el comprador y el precio final por kilo.
    El total se calcula solo.
-5. **Reporte diario**: elige la fecha y usa *Imprimir / PDF*.
+5. **Reportes**: elige *Por día* o *Por rango de fechas*, genera el reporte y usa *Imprimir / PDF*.
+
+Compradores (tienda en línea):
+
+1. En el login, **Soy comprador: crear mi cuenta**. Llega un correo para confirmar la cuenta
+   (si el correo no está configurado, el admin la activa en **Usuarios → Activar**).
+2. Entra con el mismo login: el sistema lo manda directo a la tienda.
+3. **Agregar al carrito** aparta el lote; los demás compradores lo ven como *No disponible*.
+4. **Mi carrito → Pagar**: llena los datos de la tarjeta. Al aprobarse se registra la compra,
+   el lote queda vendido y se muestra el comprobante (también en **Mis pedidos**).
+
+Las compras en línea aparecen en **Compras** y en los reportes marcadas como *En línea*.
+Mientras un lote está en el carrito de un comprador, el personal lo ve como *Apartado* y no puede venderlo.
 
 Como admin, en **Usuarios** puedes dar de alta al personal (rol `usuario` o `admin`),
 activar o desactivar cuentas y cambiar contraseñas. Las contraseñas se guardan cifradas con bcrypt,
@@ -364,9 +388,10 @@ Al arrancar la primera vez se crean solos los tipos: Pescado, Crustáceo, Molusc
 ```
 config/        conexión a la base (Sequelize)
 controllers/   lógica de cada módulo
-helpers/       correo, tokens (JWT), fechas, subida de imágenes
-middleware/    protegerRutas (JWT) y soloAdmin (rol)
-models/        Tipo, Lote, Especie, Comprador, Compra, Usuario + asociaciones
+helpers/       correo, tokens (JWT), fechas, subida de imágenes, carrito (vencimiento de apartados)
+middleware/    protegerRutas (JWT), soloAdmin, soloPersonal y soloComprador (roles)
+models/        Tipo, Lote, Especie, Comprador, Compra, Carrito, Pago, Usuario + asociaciones
+               migraciones.js agrega las columnas nuevas si la base ya existía
 routes/        rutas de cada módulo
 views/         vistas EJS con Bootstrap
 public/        bootstrap, css e imágenes de especies

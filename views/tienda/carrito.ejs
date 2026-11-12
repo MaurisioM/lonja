@@ -1,0 +1,51 @@
+<%- include('../plantillas/tienda_header') %>
+<h1 class="h3 mb-1">Mi carrito</h1>
+<p class="text-muted">Los lotes de tu carrito están apartados para ti <%= minutos %> minutos; si no pagas a tiempo vuelven a quedar disponibles.</p>
+
+<% if (!filas.length) { %>
+  <div class="text-center py-5">
+    <p class="text-muted">Tu carrito está vacío.</p>
+    <a class="btn btn-primary" href="/tienda">Ver lotes en venta</a>
+  </div>
+<% } else { %>
+  <div class="table-responsive">
+  <table class="table align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Lote</th><th>Especies</th><th class="text-end">Kilos</th><th class="text-end">Cajas</th>
+        <th class="text-end">Precio / kg</th><th class="text-end">Total</th><th>Apartado hasta</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% filas.forEach(f => { const l = f.lote; %>
+        <tr>
+          <td><%= l.id_lte %></td>
+          <td><%= l.especies.map(e => e.nombre).join(', ') || '—' %></td>
+          <td class="text-end"><%= Number(l.kilos).toFixed(2) %></td>
+          <td class="text-end"><%= l.numero_cajas %></td>
+          <td class="text-end"><%= dinero(l.precio_kilo_salida) %></td>
+          <td class="text-end fw-semibold"><%= dinero(totalLote(l)) %></td>
+          <td><%= venceEn(f).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) %></td>
+          <td class="text-end">
+            <form action="/tienda/carrito/<%= l.id_lte %>?_method=DELETE" method="POST" class="d-inline">
+              <button class="btn btn-sm btn-outline-danger" type="submit">Quitar</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+    <tfoot class="table-light fw-bold">
+      <tr>
+        <td colspan="5" class="text-end">Total a pagar (<%= filas.length %> <%= filas.length === 1 ? 'lote' : 'lotes' %>)</td>
+        <td class="text-end"><%= dinero(total) %></td>
+        <td colspan="2"></td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+  <div class="d-flex flex-wrap justify-content-end gap-2">
+    <a class="btn btn-outline-secondary" href="/tienda">Seguir comprando</a>
+    <a class="btn btn-success" href="/tienda/pago">Pagar <%= dinero(total) %></a>
+  </div>
+<% } %>
+<%- include('../plantillas/footer') %>

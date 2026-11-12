@@ -25,3 +25,17 @@ const dinero = (n) =>
   Number(n).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
 
 export { fechaISO, valorDatetimeLocal, rangoDelDia, mostrarFecha, dinero };
+
+// rango [inicio, fin) que va del inicio de "desde" al final de "hasta" (ambos "AAAA-MM-DD", inclusivos)
+const rangoDeFechas = (desde, hasta) => ({
+  inicio: rangoDelDia(desde).inicio,
+  fin: rangoDelDia(hasta).fin,
+});
+
+// "12 de noviembre de 2026"
+const fechaLarga = (fecha, opciones = { dateStyle: "long" }) => {
+  const [a, m, d] = fecha.split("-").map(Number);
+  return new Date(a, m - 1, d).toLocaleDateString("es-MX", opciones);
+};
+
+export { rangoDeFechas, fechaLarga };

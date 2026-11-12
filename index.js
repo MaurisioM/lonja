@@ -7,8 +7,11 @@ import cookieParser from "cookie-parser";
 import db from "./config/db.js";
 import "./models/index.js";
 import createInitialAdmin from "./models/config_adm.js";
+import migrar from "./models/migraciones.js";
 import rutaProteger from "./middleware/protegerRutas.js";
 import soloAdmin from "./middleware/soloAdmin.js";
+import soloPersonal from "./middleware/soloPersonal.js";
+import soloComprador from "./middleware/soloComprador.js";
 
 import router_login from "./routes/login_router.js";
 import router_usuario from "./routes/usuario_router.js";
@@ -18,6 +21,7 @@ import router_especie from "./routes/especie_router.js";
 import router_comprador from "./routes/comprador_router.js";
 import router_compra from "./routes/compra_router.js";
 import router_reporte from "./routes/reporte_router.js";
+import router_tienda from "./routes/tienda_router.js";
 
 const __dirname = path.resolve();
 dotenv.config({ path: ".env", quiet: true });
@@ -61,13 +65,16 @@ app.use((req, res, next) => {
 
 //routing (todo excepto el login queda protegido con el JWT)
 app.use("/", router_login);
+// administración: solo el personal (admin / usuario), nunca los compradores
 app.use("/usuarios", rutaProteger, soloAdmin, router_usuario);
-app.use("/tipos", rutaProteger, router_tipo);
-app.use("/lotes", rutaProteger, router_lote);
-app.use("/especies", rutaProteger, router_especie);
-app.use("/compradores", rutaProteger, router_comprador);
-app.use("/compras", rutaProteger, router_compra);
-app.use("/reportes", rutaProteger, router_reporte);
+app.use("/tipos", rutaProteger, soloPersonal, router_tipo);
+app.use("/lotes", rutaProteger, soloPersonal, router_lote);
+app.use("/especies", rutaProteger, soloPersonal, router_especie);
+app.use("/compradores", rutaProteger, soloPersonal, router_comprador);
+app.use("/compras", rutaProteger, soloPersonal, router_compra);
+app.use("/reportes", rutaProteger, soloPersonal, router_reporte);
+// tienda en línea: solo compradores
+app.use("/tienda", rutaProteger, soloComprador, router_tienda);
 
 //página no encontrada
 app.use((req, res) => {
@@ -88,6 +95,7 @@ const port = process.env.PORT_BACKEND || 2800;
 
     // crea las tablas que no existan
     await db.sync();
+    await migrar(); // agrega columnas nuevas a tablas que ya existían
     console.log("Modelos sincronizados.");
 
     //llamar para crear admin y catálogo inicial

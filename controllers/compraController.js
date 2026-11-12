@@ -1,20 +1,24 @@
 import { Op } from "sequelize";
 import { check, validationResult } from "express-validator";
-import { Compra, Comprador, Lote, Especie } from "../models/index.js";
+import { Compra, Comprador, Lote, Especie, Carrito, Pago } from "../models/index.js";
 import { valorDatetimeLocal, rangoDelDia, mostrarFecha, dinero } from "../helpers/fechas.js";
+import { limpiarVencidos } from "../helpers/carrito.js";
 
-// lotes que todavía no se han comprado (más el lote actual cuando se edita)
-const lotesDisponibles = (incluirId = null) =>
-  Lote.findAll({
+// lotes que todavía no se han comprado ni están apartados en el carrito de un
+// comprador en línea (más el lote actual cuando se edita)
+const lotesDisponibles = async (incluirId = null) => {
+  await limpiarVencidos();
+  const libre = { "$compra.id_cmp$": null, "$carrito.id_lte$": null };
+  return Lote.findAll({
     include: [
       { model: Compra, as: "compra", required: false },
+      { model: Carrito, as: "carrito", required: false, attributes: ["id_lte"] },
       { model: Especie, as: "especies", attributes: ["nombre"] },
     ],
-    where: incluirId
-      ? { [Op.or]: [{ "$compra.id_cmp$": null }, { id_lte: incluirId }] }
-      : { "$compra.id_cmp$": null },
+    where: incluirId ? { [Op.or]: [libre, { id_lte: incluirId }] } : libre,
     order: [["id_lte", "DESC"]],
   });
+};
 
 const formulario = async (res, compra, action, errores = null, editando = false) => {
   const lotes = await lotesDisponibles(editando ? compra.id_cmp : null);
@@ -35,6 +39,7 @@ const inicio = async (req, res) => {
     order: [["fecha", "DESC"]],
     include: [
       { model: Comprador, as: "comprador" },
+      { model: Pago, as: "pago", attributes: ["referencia"] },
       { model: Lote, as: "lote", include: [{ model: Especie, as: "especies", attributes: ["nombre"] }] },
     ],
   });
@@ -50,6 +55,8 @@ async function validar(req, editando) {
       .custom(async (v) => {
         if (!(await Lote.findByPk(v))) throw new Error("El lote no existe");
         if (await Compra.findByPk(v)) throw new Error("Ese lote ya fue comprado");
+        await limpiarVencidos();
+        if (await Carrito.findByPk(v)) throw new Error("Ese lote está apartado en el carrito de un comprador en línea");
       }).run(req);
   }
   await check("codigo_cpr").isInt().withMessage("Selecciona un comprador").bail()

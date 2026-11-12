@@ -1,0 +1,48 @@
+<%- include('../plantillas/simple_header') %>
+<h1 class="h4 text-center mb-1">Registro de comprador</h1>
+<p class="text-center text-muted small">Crea tu cuenta para comprar lotes en línea.</p>
+<%- include('../plantillas/errores') %>
+
+<form action="<%= action %>" method="<%= method %>">
+  <div class="mb-3">
+    <label class="form-label" for="nombre">Nombre</label>
+    <input type="text" class="form-control" id="nombre" name="nombre" maxlength="15" value="<%= persona ? persona.nombre : '' %>" required>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 mb-3">
+      <label class="form-label" for="apellido_paterno">Apellido paterno</label>
+      <input type="text" class="form-control" id="apellido_paterno" name="apellido_paterno" maxlength="15" value="<%= persona ? persona.apellido_paterno : '' %>" required>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label class="form-label" for="apellido_materno">Apellido materno</label>
+      <input type="text" class="form-control" id="apellido_materno" name="apellido_materno" maxlength="15" value="<%= persona ? persona.apellido_materno : '' %>">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="direccion">Dirección</label>
+    <input type="text" class="form-control" id="direccion" name="direccion" maxlength="200" value="<%= persona ? persona.direccion : '' %>" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="correo">Correo</label>
+    <input type="email" class="form-control" id="correo" name="correo" maxlength="80" value="<%= persona ? persona.correo : '' %>" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="usuario">Nombre de usuario</label>
+    <input type="text" class="form-control" id="usuario" name="usuario" maxlength="30" value="<%= persona ? persona.usuario : '' %>" required>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 mb-3">
+      <label class="form-label" for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+    </div>
+    <div class="col-sm-6 mb-3">
+      <label class="form-label" for="repetir">Repetir password</label>
+      <input type="password" class="form-control" id="repetir" name="repetir" minlength="6" required>
+    </div>
+  </div>
+  <div class="d-grid gap-2">
+    <button class="btn btn-primary" type="submit">Crear mi cuenta</button>
+    <a class="btn btn-outline-secondary" href="/">Cancelar</a>
+  </div>
+</form>
+<%- include('../plantillas/simple_footer') %>

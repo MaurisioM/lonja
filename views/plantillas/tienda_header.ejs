@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tienda · Lonja de Veracruz</title>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-lonja d-print-none">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/tienda">
+        <img src="/bootstrap/img/lonja.svg" width="34" height="34" alt="">
+        Lonja de Veracruz · Tienda
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
+        aria-controls="menu" aria-expanded="false" aria-label="Menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menu">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/tienda">Lotes en venta</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/tienda/carrito">
+              Mi carrito <span class="badge text-bg-warning" id="contador-carrito"><%= enCarrito %></span>
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/tienda/pedidos">Mis pedidos</a></li>
+        </ul>
+        <span class="navbar-text me-3">
+          <%= usuario.nombre %> <span class="badge text-bg-light">comprador</span>
+        </span>
+        <a class="btn btn-outline-light btn-sm" href="/cerrarsesion">Cerrar sesión</a>
+      </div>
+    </div>
+  </nav>
+  <main class="container bg-white shadow-sm p-4 my-4 rounded">
+    <% if (ok) { %>
+      <div class="alert alert-success alert-dismissible fade show d-print-none" role="alert">
+        <%= ok %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    <% } %>
+    <% if (aviso) { %>
+      <div class="alert alert-warning alert-dismissible fade show d-print-none" role="alert">
+        <%= aviso %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    <% } %>

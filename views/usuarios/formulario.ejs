@@ -10,10 +10,16 @@
   </div>
   <div class="col-md-6">
     <label class="form-label" for="rol">Rol</label>
-    <select class="form-select" id="rol" name="rol">
-      <option value="usuario" <%= persona && persona.rol === 'usuario' ? 'selected' : '' %>>Usuario (captura y reportes)</option>
-      <option value="admin" <%= persona && persona.rol === 'admin' ? 'selected' : '' %>>Administrador</option>
-    </select>
+    <% if (persona && persona.rol === 'comprador') { %>
+      <%# las cuentas de compradores se crean desde el registro de compradores y no cambian de rol %>
+      <input type="hidden" name="rol" value="comprador">
+      <input class="form-control" id="rol" value="Comprador (tienda en línea)" disabled>
+    <% } else { %>
+      <select class="form-select" id="rol" name="rol">
+        <option value="usuario" <%= persona && persona.rol === 'usuario' ? 'selected' : '' %>>Usuario (captura y reportes)</option>
+        <option value="admin" <%= persona && persona.rol === 'admin' ? 'selected' : '' %>>Administrador</option>
+      </select>
+    <% } %>
   </div>
   <div class="col-md-6">
     <label class="form-label" for="nombre">Nombre</label>

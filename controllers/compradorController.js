@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import { check, validationResult } from "express-validator";
-import { Comprador, Compra } from "../models/index.js";
+import db from "../config/db.js";
+import { Comprador, Compra, Usuario, Carrito, Pago } from "../models/index.js";
 
 const formulario = (res, comprador, action, errores = null) =>
   res.render("compradores/formulario", { comprador, action, method: "POST", errores });
@@ -76,7 +77,14 @@ const eliminar = async (req, res) => {
   if (compras > 0) {
     return res.redirect("/compradores/ver?aviso=No se puede eliminar: el comprador tiene compras registradas");
   }
-  await Comprador.destroy({ where: { codigo_cpr: req.params.id } });
+  // junto con el comprador se van su cuenta de la tienda, su carrito y sus pagos ya sin compras
+  await db.transaction(async (t) => {
+    const where = { codigo_cpr: req.params.id };
+    await Usuario.destroy({ where: { ...where, rol: "comprador" }, transaction: t });
+    await Carrito.destroy({ where, transaction: t });
+    await Pago.destroy({ where, transaction: t });
+    await Comprador.destroy({ where, transaction: t });
+  });
   res.redirect("/compradores/ver?ok=Comprador eliminado");
 };
 

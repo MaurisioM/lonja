@@ -15,7 +15,7 @@
         <td><%= u.usuario %></td>
         <td><%= u.nombre %> <%= u.apellido %></td>
         <td><%= u.email %></td>
-        <td><span class="badge <%= u.rol === 'admin' ? 'text-bg-danger' : 'text-bg-secondary' %>"><%= u.rol %></span></td>
+        <td><span class="badge <%= u.rol === 'admin' ? 'text-bg-danger' : u.rol === 'comprador' ? 'text-bg-info' : 'text-bg-secondary' %>"><%= u.rol %></span></td>
         <td>
           <% if (u.confirmar) { %><span class="badge text-bg-success">Activa</span>
           <% } else { %><span class="badge text-bg-warning">Sin confirmar</span><% } %>

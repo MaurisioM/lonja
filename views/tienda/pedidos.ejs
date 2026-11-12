@@ -1,0 +1,25 @@
+<%- include('../plantillas/tienda_header') %>
+<h1 class="h3 mb-3">Mis pedidos</h1>
+<div class="table-responsive">
+<table class="table table-striped align-middle">
+  <thead class="table-dark">
+    <tr><th>Folio</th><th>Fecha</th><th>Lotes</th><th>Pago</th><th class="text-end">Total</th><th></th></tr>
+  </thead>
+  <tbody>
+    <% pagos.forEach(p => { %>
+      <tr>
+        <td><%= p.referencia %></td>
+        <td><%= mostrarFecha(p.fecha) %></td>
+        <td><%= p.compras.map(c => c.id_cmp).join(', ') || '—' %></td>
+        <td>Tarjeta ···· <%= p.ultimos4 %></td>
+        <td class="text-end fw-semibold"><%= dinero(p.total) %></td>
+        <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/tienda/pedidos/<%= p.id_pgo %>">Comprobante</a></td>
+      </tr>
+    <% }) %>
+    <% if (!pagos.length) { %>
+      <tr><td colspan="6" class="text-center text-muted py-3">Todavía no has comprado ningún lote</td></tr>
+    <% } %>
+  </tbody>
+</table>
+</div>
+<%- include('../plantillas/footer') %>

@@ -4,6 +4,8 @@ import Lote from "./Lote.js";
 import Especie from "./Especie.js";
 import Comprador from "./Comprador.js";
 import Compra from "./Compra.js";
+import Carrito from "./Carrito.js";
+import Pago from "./Pago.js";
 
 // Asociaciones (según el diseño relacional)
 
@@ -23,4 +25,23 @@ Compra.belongsTo(Lote, { foreignKey: "id_cmp", as: "lote" });
 Comprador.hasMany(Compra, { foreignKey: "codigo_cpr", as: "compras", onDelete: "RESTRICT" });
 Compra.belongsTo(Comprador, { foreignKey: "codigo_cpr", as: "comprador" });
 
-export { Usuario, Tipo, Lote, Especie, Comprador, Compra };
+// Lote 1 --- 1 Carrito (un lote solo puede estar apartado por un comprador)
+Lote.hasOne(Carrito, { foreignKey: "id_lte", as: "carrito", onDelete: "CASCADE" });
+Carrito.belongsTo(Lote, { foreignKey: "id_lte", as: "lote" });
+
+// Comprador 1 --- N Carrito
+Comprador.hasMany(Carrito, { foreignKey: "codigo_cpr", as: "carrito", onDelete: "CASCADE" });
+Carrito.belongsTo(Comprador, { foreignKey: "codigo_cpr", as: "comprador" });
+
+// Comprador 1 --- N Pago
+Comprador.hasMany(Pago, { foreignKey: "codigo_cpr", as: "pagos", onDelete: "RESTRICT" });
+Pago.belongsTo(Comprador, { foreignKey: "codigo_cpr", as: "comprador" });
+
+// Pago 1 --- N Compra (las compras de mostrador no tienen pago)
+Pago.hasMany(Compra, { foreignKey: "id_pgo", as: "compras", constraints: false });
+Compra.belongsTo(Pago, { foreignKey: "id_pgo", as: "pago", constraints: false });
+
+// Usuario (rol comprador) N --- 1 Comprador
+Usuario.belongsTo(Comprador, { foreignKey: "codigo_cpr", as: "comprador", constraints: false });
+
+export { Usuario, Tipo, Lote, Especie, Comprador, Compra, Carrito, Pago };

@@ -50,9 +50,35 @@ CREATE TABLE compra (
   precio_kilo_final DECIMAL(10,2) NOT NULL,
   precio_total DECIMAL(12,2) NOT NULL,
   fecha DATETIME NOT NULL,
+  id_pgo INTEGER NULL, -- pago en línea (NULL = compra registrada en mostrador)
   PRIMARY KEY (id_cmp),
   FOREIGN KEY (id_cmp) REFERENCES lote (id_lte) ON UPDATE CASCADE,
   FOREIGN KEY (codigo_cpr) REFERENCES comprador (codigo_cpr) ON UPDATE CASCADE
+);
+
+-- Pago en línea (simulado): agrupa las compras de un carrito. No guarda la tarjeta completa ni el CVV
+CREATE TABLE pago (
+  id_pgo INTEGER NOT NULL AUTO_INCREMENT,
+  codigo_cpr SMALLINT NOT NULL,
+  total DECIMAL(12,2) NOT NULL,
+  metodo VARCHAR(20) NOT NULL DEFAULT 'tarjeta',
+  titular VARCHAR(60) NOT NULL,
+  ultimos4 VARCHAR(4) NOT NULL,
+  referencia VARCHAR(30) NOT NULL,
+  fecha DATETIME NOT NULL,
+  PRIMARY KEY (id_pgo),
+  UNIQUE KEY referencia (referencia),
+  FOREIGN KEY (codigo_cpr) REFERENCES comprador (codigo_cpr) ON UPDATE CASCADE
+);
+
+-- Carrito: id_lte es PK, así un lote solo puede estar apartado por un comprador a la vez
+CREATE TABLE carrito (
+  id_lte INTEGER NOT NULL,
+  codigo_cpr SMALLINT NOT NULL,
+  agregado DATETIME NOT NULL,
+  PRIMARY KEY (id_lte),
+  FOREIGN KEY (id_lte) REFERENCES lote (id_lte) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (codigo_cpr) REFERENCES comprador (codigo_cpr) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Personal autorizado (control de acceso)
@@ -64,7 +90,8 @@ CREATE TABLE usuario (
   email VARCHAR(80) NOT NULL,
   password VARCHAR(255) NOT NULL,
   confirmar TINYINT(1) DEFAULT 0,
-  rol VARCHAR(15) NOT NULL DEFAULT 'usuario',
+  rol VARCHAR(15) NOT NULL DEFAULT 'usuario', -- admin | usuario | comprador
+  codigo_cpr SMALLINT NULL, -- solo rol comprador: a qué comprador pertenece la cuenta
   token VARCHAR(255) NULL,
   PRIMARY KEY (id),
   UNIQUE KEY usuario (usuario),

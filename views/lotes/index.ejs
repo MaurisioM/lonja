@@ -28,6 +28,7 @@
         <td class="text-end">$<%= Number(l.precio_kilo_salida).toFixed(2) %></td>
         <td>
           <% if (l.compra) { %><span class="badge text-bg-success">Vendido</span>
+          <% } else if (l.carrito) { %><span class="badge text-bg-secondary" title="En el carrito de un comprador en línea">Apartado</span>
           <% } else { %><a class="badge text-bg-warning text-decoration-none" href="/compras/crear?lote=<%= l.id_lte %>">Disponible · vender</a><% } %>
         </td>
         <td class="text-nowrap">

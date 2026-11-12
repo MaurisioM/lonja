@@ -1,0 +1,49 @@
+<%- include('../plantillas/tienda_header') %>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 d-print-none">
+  <h1 class="h3 mb-0">Comprobante de compra</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="/tienda/pedidos">Mis pedidos</a>
+    <button class="btn btn-success" type="button" onclick="window.print()">Imprimir / PDF</button>
+  </div>
+</div>
+
+<div class="text-center mb-4">
+  <img src="/bootstrap/img/lonja.svg" width="56" height="56" alt="">
+  <h2 class="h4 mb-0">Lonja de Veracruz</h2>
+  <p class="mb-0">Comprobante de compra en línea</p>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-lg-3"><div class="border rounded p-2"><div class="small text-muted">Folio</div><div class="fw-bold"><%= pago.referencia %></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="border rounded p-2"><div class="small text-muted">Fecha</div><div class="fw-bold"><%= mostrarFecha(pago.fecha) %></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="border rounded p-2"><div class="small text-muted">Comprador</div><div class="fw-bold"><%= usuario.nombre %> <%= usuario.apellido %></div></div></div>
+  <div class="col-sm-6 col-lg-3"><div class="border rounded p-2"><div class="small text-muted">Forma de pago</div><div class="fw-bold">Tarjeta ···· <%= pago.ultimos4 %></div></div></div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-sm table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Lote</th><th>Especies (tipo)</th><th class="text-end">Kilos</th><th class="text-end">Cajas</th>
+      <th class="text-end">Precio / kg</th><th class="text-end">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% pago.compras.forEach(c => { %>
+      <tr>
+        <td><%= c.id_cmp %></td>
+        <td><%= c.lote.especies.map(e => e.nombre + ' (' + e.tipo.nombre + ')').join(', ') || '—' %></td>
+        <td class="text-end"><%= Number(c.lote.kilos).toFixed(2) %></td>
+        <td class="text-end"><%= c.lote.numero_cajas %></td>
+        <td class="text-end"><%= dinero(c.precio_kilo_final) %></td>
+        <td class="text-end fw-semibold"><%= dinero(c.precio_total) %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+  <tfoot class="table-light fw-bold">
+    <tr><td colspan="5" class="text-end">Total pagado</td><td class="text-end"><%= dinero(pago.total) %></td></tr>
+  </tfoot>
+</table>
+</div>
+<p class="small text-muted">Titular de la tarjeta: <%= pago.titular %>. Pago simulado con fines académicos: no se realizó ningún cargo real.</p>
+<%- include('../plantillas/footer') %>

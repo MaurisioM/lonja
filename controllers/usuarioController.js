@@ -15,12 +15,14 @@ const inicio = async (req, res) => {
 
 const verCrear = (req, res) => formulario(res, null, "/usuarios/registrar");
 
-async function validar(req, esNuevo) {
+// esComprador: la cuenta pertenece a un comprador de la tienda; su rol no se cambia desde aquí
+async function validar(req, esNuevo, esComprador = false) {
+  if (esComprador) req.body.rol = "comprador";
   await check("usuario").trim().notEmpty().withMessage("El usuario es obligatorio").run(req);
   await check("nombre").trim().notEmpty().withMessage("El nombre es obligatorio").run(req);
   await check("apellido").trim().notEmpty().withMessage("El apellido es obligatorio").run(req);
   await check("email").trim().isEmail().withMessage("El correo no es válido").run(req);
-  await check("rol").isIn(["admin", "usuario"]).withMessage("Rol no válido").run(req);
+  await check("rol").isIn(esComprador ? ["comprador"] : ["admin", "usuario"]).withMessage("Rol no válido").run(req);
   if (esNuevo || req.body.password) {
     await check("password").isLength({ min: 6 }).withMessage("El password debe tener al menos 6 caracteres").run(req);
   }
@@ -54,7 +56,7 @@ const actualizar = async (req, res) => {
   if (!persona) return res.redirect("/usuarios/ver");
 
   const action = `/usuarios/${persona.id}?_method=PUT`;
-  const valido = await validar(req, false);
+  const valido = await validar(req, false, persona.rol === "comprador");
   if (!valido.isEmpty()) return formulario(res, { ...req.body, id: persona.id }, action, valido.array());
 
   const { usuario, nombre, apellido, email, password, rol } = req.body;

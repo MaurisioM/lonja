@@ -21,7 +21,10 @@
       <tr>
         <td><%= c.id_cmp %></td>
         <td><%= mostrarFecha(c.fecha) %></td>
-        <td><%= c.comprador.nombre %> <%= c.comprador.apellido_paterno %></td>
+        <td>
+          <%= c.comprador.nombre %> <%= c.comprador.apellido_paterno %>
+          <% if (c.id_pgo) { %><span class="badge text-bg-info" title="<%= c.pago ? 'Folio ' + c.pago.referencia : '' %>">En línea</span><% } %>
+        </td>
         <td><%= c.lote.especies.map(e => e.nombre).join(', ') || '—' %></td>
         <td class="text-end"><%= Number(c.lote.kilos).toFixed(2) %></td>
         <td class="text-end"><%= dinero(c.precio_kilo_final) %></td>

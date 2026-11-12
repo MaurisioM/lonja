@@ -38,6 +38,45 @@
   object-fit: cover;
 }
 
+/* Tienda: cada tarjeta muestra solo la insignia y el botón de su estado
+   (disponible | mio | apartado | vendido), que el catálogo actualiza por JavaScript */
+.foto-lote {
+  height: 160px;
+  object-fit: cover;
+  background: #e9f2f5;
+}
+
+.tarjeta-lote [class^="insignia-"],
+.tarjeta-lote [class*=" insignia-"],
+.tarjeta-lote [class^="accion-"],
+.tarjeta-lote [class*=" accion-"] {
+  display: none;
+}
+
+.tarjeta-lote[data-estado="disponible"] .insignia-disponible,
+.tarjeta-lote[data-estado="mio"] .insignia-mio,
+.tarjeta-lote[data-estado="apartado"] .insignia-apartado,
+.tarjeta-lote[data-estado="vendido"] .insignia-vendido {
+  display: inline-block;
+}
+
+.tarjeta-lote[data-estado="disponible"] .accion-disponible,
+.tarjeta-lote[data-estado="mio"] .accion-mio,
+.tarjeta-lote[data-estado="apartado"] .accion-apartado,
+.tarjeta-lote[data-estado="vendido"] .accion-vendido {
+  display: block;
+}
+
+.tarjeta-lote[data-estado="mio"] {
+  border-color: var(--lonja);
+}
+
+.tarjeta-lote[data-estado="apartado"] .foto-lote,
+.tarjeta-lote[data-estado="vendido"] .foto-lote {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
 @media print {
   body {
     background: #fff !important;
